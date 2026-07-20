@@ -6,20 +6,30 @@ space and enforce their property schemas.
 
 import pytest
 
-from opencrab.grammar.validator import validate_node, validate_node_properties
+from opencrab.grammar.validator import (
+    get_allowed_relations,
+    validate_edge,
+    validate_node,
+    validate_node_properties,
+)
 from opencrab.schemas import loader, pack_registry
 
 
 @pytest.fixture
 def isolated_types_dir(tmp_path, monkeypatch):
-    """Point the type registry and loader at an empty temp directory."""
+    """Point the type/relation registries and loader at empty temp directories."""
     types_dir = tmp_path / "types"
     types_dir.mkdir()
+    relations_dir = tmp_path / "relations"
     monkeypatch.setattr(pack_registry, "_TYPES_DIR", types_dir)
+    monkeypatch.setattr(pack_registry, "_RELATIONS_DIR", relations_dir)
     monkeypatch.setattr(loader, "SCHEMAS_DIR", types_dir)
+    monkeypatch.setattr(loader, "RELATIONS_DIR", relations_dir)
     loader.load_type_schema.cache_clear()
+    loader.load_pack_relations.cache_clear()
     yield types_dir
     loader.load_type_schema.cache_clear()
+    loader.load_pack_relations.cache_clear()
 
 
 class TestPackManifests:
@@ -88,3 +98,35 @@ class TestInstallValidatorIntegration:
         schema = loader.load_type_schema("Subscription")
         assert schema["pack"] == "saas"
         assert "properties" in schema
+
+
+class TestPackRelations:
+    def test_manifest_declares_96_relations(self):
+        pack = pack_registry.get_pack("ontology-playground")
+        rels = pack.get("relations", [])
+        assert len(rels) == 96
+        type_names = set(pack_registry._type_names(pack))
+        for rel in rels:
+            assert rel["from_space"] == "concept"
+            assert rel["to_space"] == "concept"
+            assert rel["from_type"] in type_names
+            assert rel["to_type"] in type_names
+
+    def test_pack_relation_invalid_before_install(self, isolated_types_dir):
+        assert not validate_edge("concept", "concept", "OrderPlacedByCustomer")
+
+    def test_install_extends_edge_grammar(self, isolated_types_dir):
+        result = pack_registry.install_pack("ontology-playground")
+        assert result["relations"] == 96
+        assert validate_edge("concept", "concept", "OrderPlacedByCustomer")
+        # Canonical meta-edge relations keep working.
+        assert validate_edge("concept", "concept", "related_to")
+        # Pack relations are scoped to their declared space pair.
+        assert not validate_edge("subject", "resource", "OrderPlacedByCustomer")
+        assert "OrderPlacedByCustomer" in get_allowed_relations("concept", "concept")
+
+    def test_uninstall_reverts_edge_grammar(self, isolated_types_dir):
+        pack_registry.install_pack("ontology-playground")
+        result = pack_registry.uninstall_pack("ontology-playground")
+        assert result["removed_relations"] is True
+        assert not validate_edge("concept", "concept", "OrderPlacedByCustomer")

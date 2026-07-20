@@ -135,7 +135,11 @@ def validate_edge(from_space: str, to_space: str, relation: str) -> ValidationRe
         )
 
     key = (from_space, to_space)
-    if key not in _EDGE_RELATION_MAP:
+    allowed = _EDGE_RELATION_MAP.get(key, set())
+    if relation in allowed or relation in _pack_relations(key):
+        return ValidationResult(valid=True)
+
+    if not allowed and not _pack_relations(key):
         return ValidationResult(
             valid=False,
             error=(
@@ -144,27 +148,33 @@ def validate_edge(from_space: str, to_space: str, relation: str) -> ValidationRe
             ),
         )
 
-    allowed = _EDGE_RELATION_MAP[key]
-    if relation not in allowed:
-        return ValidationResult(
-            valid=False,
-            error=(
-                f"Relation '{relation}' is not valid from '{from_space}' to '{to_space}'. "
-                f"Allowed relations: {', '.join(sorted(allowed))}."
-            ),
-        )
+    return ValidationResult(
+        valid=False,
+        error=(
+            f"Relation '{relation}' is not valid from '{from_space}' to '{to_space}'. "
+            f"Allowed relations: {', '.join(sorted(allowed | set(_pack_relations(key))))}."
+        ),
+    )
 
-    return ValidationResult(valid=True)
+
+def _pack_relations(key: tuple[str, str]) -> frozenset[str]:
+    """Relations declared for this space pair by installed schema packs."""
+    try:
+        from opencrab.schemas.loader import load_pack_relations
+    except ImportError:
+        return frozenset()
+    return load_pack_relations().get(key, frozenset())
 
 
 def get_allowed_relations(from_space: str, to_space: str) -> list[str]:
     """
-    Return the list of valid relation labels between two spaces.
+    Return the list of valid relation labels between two spaces,
+    including relations contributed by installed schema packs.
 
     Returns an empty list if no meta-edge exists between those spaces.
     """
     key = (from_space, to_space)
-    return sorted(_EDGE_RELATION_MAP.get(key, set()))
+    return sorted(_EDGE_RELATION_MAP.get(key, set()) | set(_pack_relations(key)))
 
 
 def validate_metadata_layer(layer: str, attribute: str) -> ValidationResult:
