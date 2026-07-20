@@ -1,4 +1,4 @@
-.PHONY: help install dev-install status serve query manifest lint format test coverage seed
+.PHONY: help install dev-install status serve query manifest lint format test coverage seed serve-http
 
 PYTHON := python
 PIP    := pip
@@ -50,3 +50,6 @@ test:
 coverage:
 	$(PYTEST) tests/ --cov=opencrab --cov-report=term-missing --cov-report=html
 	@echo "HTML report: htmlcov/index.html"
+
+serve-http:
+	scripts/serve_mcp_http.sh
