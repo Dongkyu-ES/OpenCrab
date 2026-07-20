@@ -76,16 +76,33 @@ def validate_node(space_id: str, node_type: str) -> ValidationResult:
         )
 
     if node_type not in _SPACE_NODE_TYPES[space_id]:
+        # Fall back to the Type Schema Registry: types installed by a schema
+        # pack declare their space in their YAML schema.
+        if _registered_type_space(node_type) == space_id:
+            return ValidationResult(valid=True)
         allowed = ", ".join(sorted(_SPACE_NODE_TYPES[space_id]))
         return ValidationResult(
             valid=False,
             error=(
                 f"Node type '{node_type}' is not valid in space '{space_id}'. "
-                f"Allowed types: {allowed}."
+                f"Allowed types: {allowed} (plus schema-pack types installed "
+                f"for this space)."
             ),
         )
 
     return ValidationResult(valid=True)
+
+
+def _registered_type_space(node_type: str) -> str | None:
+    """Return the space declared by an installed type schema, or None."""
+    try:
+        from opencrab.schemas.loader import load_type_schema
+    except ImportError:
+        return None
+    schema = load_type_schema(node_type)
+    if not isinstance(schema, dict):
+        return None
+    return schema.get("space")
 
 
 def validate_edge(from_space: str, to_space: str, relation: str) -> ValidationResult:

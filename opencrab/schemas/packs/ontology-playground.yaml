@@ -1,0 +1,1751 @@
+name: ontology-playground
+version: 1.0.0
+description: Schema pack for the Microsoft Ontology-Playground learn corpus (seeds/ontology-playground).
+  Formalises the domain entity models from all 13 tracks/labs — commerce, finance, healthcare, HR, manufacturing,
+  university, supply-chain risk, FIBO loans/risk, retail supply chain, and cold-chain logistics — as concept-space
+  node types (91 track-level entity models deduplicated to 75 unique types).
+source: https://github.com/microsoft/Ontology-Playground (MIT)
+spaces:
+- concept
+types:
+- name: Account
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (Banking & Finance).
+  properties:
+    accountNumber:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    type:
+      type: string
+      required: false
+      description: checking / savings / brokerage
+    balance:
+      type: number
+      required: false
+      description: USD
+    interestRate:
+      type: number
+      required: false
+      description: '%'
+    openDate:
+      type: string
+      required: false
+      format: date
+- name: AlternativeSupplier
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (Supply Chain Disruption &
+    Risk Propagation).
+  properties:
+    altSupplierId:
+      type: string
+      required: true
+      nullable: false
+      description: '"ALTSUPP-00789"'
+    name:
+      type: string
+      required: false
+    country:
+      type: string
+      required: false
+    qualificationStatus:
+      type: string
+      required: false
+      enum:
+      - Pre-qualified
+      - Approved
+      - Pending Audit
+      - Not Qualified
+    capacityAvailable:
+      type: integer
+      required: false
+      description: units/month
+    pricePremiumPercent:
+      type: number
+      required: false
+      description: '%'
+- name: Appointment
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (Healthcare System). Notes:
+    shared entity.'
+  properties:
+    appointmentId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    scheduledTime:
+      type: string
+      required: false
+      format: datetime
+    duration:
+      type: integer
+      required: false
+      description: minutes
+    type:
+      type: string
+      required: false
+    status:
+      type: string
+      required: false
+- name: Assignment
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (HR System). Notes: junction.'
+  properties:
+    assignmentId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    startDate:
+      type: string
+      required: false
+      format: date
+    endDate:
+      type: string
+      required: false
+      format: date
+    isPrimary:
+      type: boolean
+      required: false
+- name: Borrower
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (FIBO Loans Lab).
+  properties:
+    borrowerId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    name:
+      type: string
+      required: false
+    creditScore:
+      type: integer
+      required: false
+      description: e.g. FICO
+- name: Buyer
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (E-Commerce Platform).
+  properties:
+    buyerId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    email:
+      type: string
+      required: false
+    memberSince:
+      type: string
+      required: false
+      format: date
+    loyaltyTier:
+      type: string
+      required: false
+    totalSpent:
+      type: number
+      required: false
+      description: USD
+- name: Carrier
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (IQ Lab: Retail Supply Chain).'
+  properties:
+    carrierId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    carrierName:
+      type: string
+      required: false
+    serviceType:
+      type: string
+      required: false
+- name: ColdChainSensor
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (Zava Grove-to-Shelf: Semantic
+    Cold Chain).'
+  properties:
+    sensorId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    sensorModel:
+      type: string
+      required: false
+    temperatureC:
+      type: number
+      required: false
+      description: °C
+    humidityPct:
+      type: number
+      required: false
+      description: '%'
+- name: Collateral
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (FIBO Loans Lab).
+  properties:
+    assetType:
+      type: string
+      required: false
+    appraisedValue:
+      type: number
+      required: false
+      description: USD
+- name: CollateralType
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (FIBO Risk Management Lab).
+  properties:
+    collateralTypeCode:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    name:
+      type: string
+      required: false
+    recoveryExpectation:
+      type: string
+      required: false
+      description: '"high"/"moderate"/"low"'
+    description:
+      type: string
+      required: false
+- name: Component
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (Supply Chain Disruption &
+    Risk Propagation).
+  properties:
+    componentId:
+      type: string
+      required: true
+      nullable: false
+      description: '"COMP-SEM-0821"'
+    name:
+      type: string
+      required: false
+    category:
+      type: string
+      required: false
+      enum:
+      - Electronic
+      - Mechanical
+      - Chemical
+      - Packaging
+      - Raw Material
+    daysOfSupplyOnHand:
+      type: integer
+      required: false
+    criticalityLevel:
+      type: string
+      required: false
+      enum:
+      - Critical
+      - High
+      - Medium
+      - Low
+- name: ConcentrationCategory
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (FIBO Risk Management Lab).
+  properties:
+    categoryId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    name:
+      type: string
+      required: false
+    description:
+      type: string
+      required: false
+    occGuidance:
+      type: string
+      required: false
+- name: Country
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (FIBO Risk Management Lab).
+  properties:
+    countryCode:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    countryName:
+      type: string
+      required: false
+    economicZone:
+      type: string
+      required: false
+      description: '"developed"/"emerging"'
+    currency:
+      type: string
+      required: false
+    regulatoryFramework:
+      type: string
+      required: false
+- name: Course
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (University System).
+  properties:
+    courseId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    title:
+      type: string
+      required: false
+    credits:
+      type: integer
+      required: false
+    level:
+      type: string
+      required: false
+      description: 100/200/300/400
+    maxEnrollment:
+      type: integer
+      required: false
+- name: Customer
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (Fourth Coffee, Banking &
+    Finance, IQ Lab: Retail Supply Chain).'
+  properties:
+    customerId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    name:
+      type: string
+      required: false
+    email:
+      type: string
+      required: false
+    loyaltyTier:
+      type: string
+      required: false
+      enum:
+      - Bronze
+      - Silver
+      - Gold
+      - Platinum
+    joinDate:
+      type: string
+      required: false
+      format: date
+    totalSpend:
+      type: number
+      required: false
+      description: USD
+    ssn:
+      type: string
+      required: false
+      description: metadata only — schema, not values
+    creditScore:
+      type: integer
+      required: false
+      description: 300–850
+    riskProfile:
+      type: string
+      required: false
+    lifetimeValue:
+      type: number
+      required: false
+      description: USD
+- name: DemandSignal
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (IQ Lab: Retail Supply Chain).'
+  properties:
+    signalId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    signalDate:
+      type: string
+      required: false
+      format: datetime
+    signalStrength:
+      type: number
+      required: false
+- name: Department
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (HR System, University System).
+  properties:
+    departmentId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    name:
+      type: string
+      required: false
+    budget:
+      type: string
+      required: false
+    status:
+      type: string
+      required: false
+    building:
+      type: string
+      required: false
+    headOfDept:
+      type: string
+      required: false
+- name: Diagnosis
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (Healthcare System). Notes:
+    dual-connected entity.'
+  properties:
+    diagnosisId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    icdCode:
+      type: string
+      required: false
+      description: ICD standard code
+    description:
+      type: string
+      required: false
+    severity:
+      type: string
+      required: false
+    diagnosedDate:
+      type: string
+      required: false
+      format: date
+- name: DisruptionEvent
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (Supply Chain Disruption &
+    Risk Propagation).
+  properties:
+    eventId:
+      type: string
+      required: true
+      nullable: false
+      description: '"DISR-202405-TAIWAN-001"'
+    type:
+      type: string
+      required: false
+      enum:
+      - Natural Disaster
+      - Geopolitical
+      - Financial
+      - Logistics
+      - Quality Recall
+      - Pandemic
+      - Cyber Attack
+    severity:
+      type: string
+      required: false
+      enum:
+      - Critical
+      - High
+      - Medium
+      - Low
+    startDate:
+      type: string
+      required: false
+      format: date
+    estimatedDurationDays:
+      type: integer
+      required: false
+    region:
+      type: string
+      required: false
+- name: Employee
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (HR System).
+  properties:
+    employeeId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    name:
+      type: string
+      required: false
+    hireDate:
+      type: string
+      required: false
+      format: date
+    employmentStatus:
+      type: string
+      required: false
+    jobLevel:
+      type: string
+      required: false
+- name: Enrollment
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (University System). Notes:
+    junction.'
+  properties:
+    enrollmentId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    semester:
+      type: string
+      required: false
+    grade:
+      type: string
+      required: false
+    enrollDate:
+      type: string
+      required: false
+      format: date
+    status:
+      type: string
+      required: false
+- name: Farm
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (Zava Grove-to-Shelf: Semantic
+    Cold Chain).'
+  properties:
+    farmId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    name:
+      type: string
+      required: false
+    country:
+      type: string
+      required: false
+    region:
+      type: string
+      required: false
+    hectares:
+      type: number
+      required: false
+      description: ha
+- name: Forecast
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (IQ Lab: Retail Supply Chain).'
+  properties:
+    forecastId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    forecastDate:
+      type: string
+      required: false
+      format: date
+    predictedDemand:
+      type: integer
+      required: false
+- name: FruitVariety
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (Zava Grove-to-Shelf: Semantic
+    Cold Chain).'
+  properties:
+    varietyId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    commercialName:
+      type: string
+      required: false
+    category:
+      type: string
+      required: false
+    shelfLifeDays:
+      type: integer
+      required: false
+      description: days
+- name: Grower
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (Zava Grove-to-Shelf: Semantic
+    Cold Chain).'
+  properties:
+    growerId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    name:
+      type: string
+      required: false
+    country:
+      type: string
+      required: false
+    partnerSince:
+      type: string
+      required: false
+      format: date
+    isMasterGrower:
+      type: boolean
+      required: false
+      description: strategic long-term partner flag
+- name: HarvestLot
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (Zava Grove-to-Shelf: Semantic
+    Cold Chain).'
+  properties:
+    lotId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    harvestDate:
+      type: string
+      required: false
+      format: date
+    kilograms:
+      type: number
+      required: false
+      description: kg
+    qcGrade:
+      type: string
+      required: false
+- name: IndustryGroup
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (FIBO Risk Management Lab).
+  properties:
+    naicsCode:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    name:
+      type: string
+      required: false
+    cyclicality:
+      type: string
+      required: false
+      description: '"high"/"low"/"counter-cyclical"'
+    climateSensitivity:
+      type: string
+      required: false
+      description: '"high"/"moderate"/"low"'
+    essentialServices:
+      type: boolean
+      required: false
+    description:
+      type: string
+      required: false
+- name: Inventory
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (IQ Lab: Retail Supply Chain).'
+  properties:
+    inventoryId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    stockLevel:
+      type: integer
+      required: false
+    reorderPoint:
+      type: integer
+      required: false
+- name: Investment
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (Banking & Finance).
+  properties:
+    holdingId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    symbol:
+      type: string
+      required: false
+      description: e.g. MSFT, AAPL
+    shares:
+      type: number
+      required: false
+    purchasePrice:
+      type: number
+      required: false
+      description: USD
+    currentValue:
+      type: number
+      required: false
+      description: USD
+- name: Jurisdiction
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (FIBO Risk Management Lab).
+  properties:
+    code:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    name:
+      type: string
+      required: false
+    hurricaneZone:
+      type: boolean
+      required: false
+    floodZone:
+      type: boolean
+      required: false
+    earthquakeZone:
+      type: boolean
+      required: false
+    wildfireZone:
+      type: boolean
+      required: false
+    coastal:
+      type: boolean
+      required: false
+    latitude:
+      type: number
+      required: false
+    longitude:
+      type: number
+      required: false
+- name: Lender
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (FIBO Loans Lab).
+  properties:
+    lenderId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    name:
+      type: string
+      required: false
+    lenderType:
+      type: string
+      required: false
+      description: '"bank", "credit union", "mortgage company"'
+- name: LenderLienPosition
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (FIBO Loans Lab).
+  properties: {}
+- name: Loan
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (Banking & Finance, FIBO Loans
+    Lab).
+  properties:
+    loanId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    principal:
+      type: number
+      required: false
+      description: USD
+    apr:
+      type: number
+      required: false
+      description: '%'
+    term:
+      type: integer
+      required: false
+      description: months
+    status:
+      type: string
+      required: false
+    principalAmount:
+      type: number
+      required: false
+      description: USD
+    isInterestOnly:
+      type: boolean
+      required: false
+- name: LoanPaymentSchedule
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (FIBO Loans Lab).
+  properties:
+    scheduleId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    expectedPayments:
+      type: integer
+      required: false
+- name: LoanType
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (FIBO Risk Management Lab).
+  properties:
+    loanTypeCode:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    name:
+      type: string
+      required: false
+    baselRiskWeight:
+      type: number
+      required: false
+      description: '%'
+    regulatoryTreatment:
+      type: string
+      required: false
+    capitalTier:
+      type: string
+      required: false
+    description:
+      type: string
+      required: false
+- name: Machine
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (Smart Manufacturing).
+  properties:
+    machineId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    name:
+      type: string
+      required: false
+    type:
+      type: string
+      required: false
+    status:
+      type: string
+      required: false
+      description: running/idle/maintenance/offline
+    installDate:
+      type: string
+      required: false
+      format: date
+- name: MitigationAction
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (Supply Chain Disruption &
+    Risk Propagation).
+  properties:
+    actionId:
+      type: string
+      required: true
+      nullable: false
+      description: '"MA-20240501-ALT-SUPP"'
+    type:
+      type: string
+      required: false
+      enum:
+      - Activate Alternative Supplier
+      - Increase Safety Stock
+      - Redesign Component
+      - Reduce Production
+      - Expedite Shipment
+      - Customer Communication
+    status:
+      type: string
+      required: false
+      enum:
+      - Proposed
+      - Approved
+      - In Progress
+      - Completed
+      - Cancelled
+    estimatedCost:
+      type: number
+      required: false
+      description: USD
+    leadTimeSavedDays:
+      type: integer
+      required: false
+- name: Order
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (Fourth Coffee, E-Commerce
+    Platform, IQ Lab: Retail Supply Chain, Zava Grove-to-Shelf: Semantic Cold Chain).'
+  properties:
+    orderId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    timestamp:
+      type: string
+      required: false
+      format: datetime
+    total:
+      type: number
+      required: false
+      description: USD
+    status:
+      type: string
+      required: false
+      enum:
+      - Pending
+      - Preparing
+      - Ready
+      - Completed
+      - Cancelled
+    paymentMethod:
+      type: string
+      required: false
+      enum:
+      - Card
+      - Cash
+      - Mobile
+      - Gift Card
+    orderDate:
+      type: string
+      required: false
+      format: date
+    shippingMethod:
+      type: string
+      required: false
+    totalAmount:
+      type: number
+      required: false
+      description: USD
+    kilograms:
+      type: number
+      required: false
+      description: kg
+    deliveryDate:
+      type: string
+      required: false
+      format: date
+    unitPriceEur:
+      type: number
+      required: false
+      description: EUR
+- name: OrderLine
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (IQ Lab: Retail Supply Chain).'
+  properties:
+    orderLineId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    quantity:
+      type: integer
+      required: false
+    lineTotal:
+      type: number
+      required: false
+      description: USD
+- name: OwnershipInterest
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (FIBO Loans Lab).
+  properties: {}
+- name: Part
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (Smart Manufacturing).
+  properties:
+    partId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    name:
+      type: string
+      required: false
+    material:
+      type: string
+      required: false
+    weight:
+      type: string
+      required: false
+    tolerance:
+      type: string
+      required: false
+- name: Patient
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (Healthcare System).
+  properties:
+    patientId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    mrn:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    dateOfBirth:
+      type: string
+      required: false
+      format: date
+    bloodType:
+      type: string
+      required: false
+    allergies:
+      type: string
+      required: false
+- name: PaymentHistory
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (FIBO Loans Lab).
+  properties:
+    paymentHistoryId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+- name: PaymentTransaction
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (FIBO Loans Lab).
+  properties:
+    paymentTransactionId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    amount:
+      type: number
+      required: false
+      description: USD
+    postedAt:
+      type: string
+      required: false
+      format: datetime
+- name: PerformanceReview
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (HR System).
+  properties:
+    reviewId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    reviewPeriod:
+      type: string
+      required: false
+    rating:
+      type: string
+      required: false
+    reviewDate:
+      type: string
+      required: false
+      format: date
+- name: Plot
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (Zava Grove-to-Shelf: Semantic
+    Cold Chain).'
+  properties:
+    plotId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    hectares:
+      type: number
+      required: false
+      description: ha
+    plantingYear:
+      type: integer
+      required: false
+- name: Position
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (HR System).
+  properties:
+    positionId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    title:
+      type: string
+      required: false
+    level:
+      type: string
+      required: false
+    salaryBand:
+      type: string
+      required: false
+- name: Prescription
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (Healthcare System).
+  properties:
+    rxNumber:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    medication:
+      type: string
+      required: false
+    dosage:
+      type: string
+      required: false
+    frequency:
+      type: string
+      required: false
+    refillsRemaining:
+      type: integer
+      required: false
+- name: Product
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (Fourth Coffee, E-Commerce
+    Platform, IQ Lab: Retail Supply Chain).'
+  properties:
+    productId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    name:
+      type: string
+      required: false
+    category:
+      type: string
+      required: false
+      enum:
+      - Espresso
+      - Brewed
+      - Cold Brew
+      - Tea
+      - Food
+      - Merchandise
+    price:
+      type: number
+      required: false
+      description: USD
+    origin:
+      type: string
+      required: false
+    isOrganic:
+      type: boolean
+      required: false
+    sku:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    stockQty:
+      type: integer
+      required: false
+    unitCost:
+      type: number
+      required: false
+      description: USD
+    discountPercent:
+      type: number
+      required: false
+      description: '%'
+- name: ProductCategory
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (IQ Lab: Retail Supply Chain).'
+  properties:
+    categoryId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    categoryName:
+      type: string
+      required: false
+- name: ProductLine
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (Supply Chain Disruption &
+    Risk Propagation).
+  properties:
+    productLineId:
+      type: string
+      required: true
+      nullable: false
+      description: '"PL-LAP-2024"'
+    name:
+      type: string
+      required: false
+    annualRevenue:
+      type: number
+      required: false
+    marketSegment:
+      type: string
+      required: false
+    productionStatus:
+      type: string
+      required: false
+      enum:
+      - Active
+      - At Risk
+      - Halted
+      - Discontinued
+- name: Professor
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (University System).
+  properties:
+    professorId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    name:
+      type: string
+      required: false
+    rank:
+      type: string
+      required: false
+      description: Assistant/Associate/Full
+    tenured:
+      type: boolean
+      required: false
+    officeHours:
+      type: string
+      required: false
+- name: Promotion
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (IQ Lab: Retail Supply Chain).'
+  properties:
+    promotionId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    promotionName:
+      type: string
+      required: false
+    isActivePromotion:
+      type: boolean
+      required: false
+- name: Provider
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (Healthcare System).
+  properties:
+    providerId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    name:
+      type: string
+      required: false
+    specialty:
+      type: string
+      required: false
+    licenseNumber:
+      type: string
+      required: false
+    department:
+      type: string
+      required: false
+- name: QualityCheck
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (Smart Manufacturing, Zava
+    Grove-to-Shelf: Semantic Cold Chain).'
+  properties:
+    checkId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    inspector:
+      type: string
+      required: false
+    checkDate:
+      type: string
+      required: false
+      format: date
+    passed:
+      type: boolean
+      required: false
+    defectCode:
+      type: string
+      required: false
+    stage:
+      type: integer
+      required: false
+      description: 1–4
+    defectRate:
+      type: number
+      required: false
+      description: '%'
+    checkedAt:
+      type: string
+      required: false
+      format: datetime
+- name: Region
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (FIBO Risk Management Lab,
+    IQ Lab: Retail Supply Chain).'
+  properties:
+    regionCode:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    regionName:
+      type: string
+      required: false
+    description:
+      type: string
+      required: false
+    disasterProfile:
+      type: string
+      required: false
+    regionId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    timezone:
+      type: string
+      required: false
+    coldChainRequired:
+      type: boolean
+      required: false
+- name: Regulation
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (FIBO Risk Management Lab).
+  properties:
+    regulationCode:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    name:
+      type: string
+      required: false
+    issuingAuthority:
+      type: string
+      required: false
+      description: OCC, FDIC, Basel Committee
+    effectiveDate:
+      type: string
+      required: false
+      format: date
+    scope:
+      type: string
+      required: false
+    description:
+      type: string
+      required: false
+- name: RegulatoryLimit
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (FIBO Risk Management Lab).
+  properties:
+    limitId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    limitName:
+      type: string
+      required: false
+    category:
+      type: string
+      required: false
+    thresholdPct:
+      type: number
+      required: false
+      description: '%'
+    severity:
+      type: string
+      required: false
+      description: '"warning"/"action required"/"supervisory intervention"'
+    description:
+      type: string
+      required: false
+- name: RetailDC
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (Zava Grove-to-Shelf: Semantic
+    Cold Chain).'
+  properties:
+    dcId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    name:
+      type: string
+      required: false
+    country:
+      type: string
+      required: false
+    city:
+      type: string
+      required: false
+    retailerCode:
+      type: string
+      required: false
+- name: Return
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (IQ Lab: Retail Supply Chain).'
+  properties:
+    returnId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    returnDate:
+      type: string
+      required: false
+      format: date
+    reason:
+      type: string
+      required: false
+- name: Review
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (E-Commerce Platform).
+  properties:
+    reviewId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    rating:
+      type: integer
+      required: false
+    title:
+      type: string
+      required: false
+    body:
+      type: string
+      required: false
+    verified:
+      type: boolean
+      required: false
+- name: RiskAssessment
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (Supply Chain Disruption &
+    Risk Propagation).
+  properties:
+    assessmentId:
+      type: string
+      required: true
+      nullable: false
+      description: '"RA-20240501-SEM-001"'
+    assessedDate:
+      type: string
+      required: false
+      format: datetime
+    revenueAtRisk:
+      type: number
+      required: false
+      description: USD
+    timeToImpactDays:
+      type: integer
+      required: false
+    confidenceLevel:
+      type: string
+      required: false
+      enum:
+      - High
+      - Medium
+      - Low
+    recommendedAction:
+      type: string
+      required: false
+- name: Sector
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (FIBO Risk Management Lab).
+  properties:
+    sectorCode:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    sectorName:
+      type: string
+      required: false
+    description:
+      type: string
+      required: false
+- name: Sensor
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (Smart Manufacturing).
+  properties:
+    sensorId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    type:
+      type: string
+      required: false
+    unit:
+      type: string
+      required: false
+    lastReading:
+      type: string
+      required: false
+    threshold:
+      type: string
+      required: false
+- name: Servicer
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (FIBO Loans Lab).
+  properties:
+    servicerId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    organizationName:
+      type: string
+      required: false
+- name: Shipment
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (Fourth Coffee, IQ Lab: Retail
+    Supply Chain, Zava Grove-to-Shelf: Semantic Cold Chain). Notes: hub entity.'
+  properties:
+    shipmentId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    dispatchDate:
+      type: string
+      required: false
+      format: date
+    arrivalDate:
+      type: string
+      required: false
+      format: date
+    status:
+      type: string
+      required: false
+      enum:
+      - In Transit
+      - Delivered
+      - Delayed
+    weight:
+      type: number
+      required: false
+      description: kg
+    shipDate:
+      type: string
+      required: false
+      format: date
+    deliveryDate:
+      type: string
+      required: false
+      format: date
+    departureDate:
+      type: string
+      required: false
+      format: datetime
+    etaDate:
+      type: string
+      required: false
+      format: datetime
+    modality:
+      type: string
+      required: false
+    containerId:
+      type: string
+      required: false
+- name: ShoppingCart
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (E-Commerce Platform). Notes:
+    session entity.'
+  properties:
+    cartId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    createdAt:
+      type: string
+      required: false
+      format: datetime
+    itemCount:
+      type: integer
+      required: false
+      description: denormalized
+    subtotal:
+      type: number
+      required: false
+      description: USD
+- name: Store
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (Fourth Coffee, IQ Lab: Retail
+    Supply Chain, Zava Grove-to-Shelf: Semantic Cold Chain).'
+  properties:
+    storeId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    name:
+      type: string
+      required: false
+    city:
+      type: string
+      required: false
+    state:
+      type: string
+      required: false
+    openDate:
+      type: string
+      required: false
+      format: date
+    capacity:
+      type: integer
+      required: false
+      description: seating capacity
+    storeName:
+      type: string
+      required: false
+    address:
+      type: string
+      required: false
+    retailerName:
+      type: string
+      required: false
+    country:
+      type: string
+      required: false
+- name: Student
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (University System).
+  properties:
+    studentId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    name:
+      type: string
+      required: false
+    gpa:
+      type: string
+      required: false
+      description: 0.0–4.0
+    enrollmentYear:
+      type: integer
+      required: false
+    major:
+      type: string
+      required: false
+- name: Subsector
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (FIBO Risk Management Lab).
+  properties:
+    subsectorCode:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    subsectorName:
+      type: string
+      required: false
+- name: Supplier
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (Fourth Coffee, Supply Chain
+    Disruption & Risk Propagation).
+  properties:
+    supplierId:
+      type: string
+      required: true
+      nullable: false
+      description: e.g. "SUPP-00456"
+    name:
+      type: string
+      required: false
+    country:
+      type: string
+      required: false
+    certification:
+      type: string
+      required: false
+      enum:
+      - Fair Trade
+      - Rainforest Alliance
+      - Organic
+      - Direct Trade
+      - None
+    rating:
+      type: number
+      required: false
+      description: 1–5
+    tier:
+      type: string
+      required: false
+      enum:
+      - Tier 1
+      - '2'
+      - '3'
+    reliabilityScore:
+      type: number
+      required: false
+      description: 0–100
+    singleSourced:
+      type: boolean
+      required: false
+- name: SustainabilityProgram
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (Zava Grove-to-Shelf: Semantic
+    Cold Chain).'
+  properties:
+    programId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    name:
+      type: string
+      required: false
+    focusArea:
+      type: string
+      required: false
+    startYear:
+      type: integer
+      required: false
+- name: Transaction
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (Banking & Finance).
+  properties:
+    transactionId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    amount:
+      type: number
+      required: false
+      description: USD
+    type:
+      type: string
+      required: false
+    timestamp:
+      type: string
+      required: false
+      format: datetime
+      description: time-of-day precision for fraud/audit
+    merchant:
+      type: string
+      required: false
+- name: Warehouse
+  space: concept
+  description: 'Domain entity type from the Ontology-Playground learn corpus (IQ Lab: Retail Supply Chain).'
+  properties:
+    warehouseId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    warehouseName:
+      type: string
+      required: false
+    capacity:
+      type: integer
+      required: false
+- name: WorkOrder
+  space: concept
+  description: Domain entity type from the Ontology-Playground learn corpus (Smart Manufacturing).
+  properties:
+    workOrderId:
+      type: string
+      required: true
+      nullable: false
+      description: Identifier property.
+    priority:
+      type: string
+      required: false
+    status:
+      type: string
+      required: false
+    startDate:
+      type: string
+      required: false
+      format: date
+    dueDate:
+      type: string
+      required: false
+      format: date
