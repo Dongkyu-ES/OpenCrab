@@ -519,3 +519,109 @@ class TestImpactEngine:
         assert result["magnitude"] == 0.7
         assert "confidence" in result
         assert result["confidence"] > 0
+
+
+# ---------------------------------------------------------------------------
+# HTTP dispatch (_mcp_dispatch) regression tests — cover the four hotfixes
+# in apps/api/main.py that the registry-path tests above do not exercise:
+#   1. ontology_ingest used ChromaStore.upsert (nonexistent) → upsert_texts
+#   2. ontology_add_edge passed validate_edge args in wrong order
+#   3. add_node/add_edge inverted the ValidationResult truthiness check
+#   4. ontology_add_node called graph.upsert_node with wrong positional args
+#      and did not mirror into the doc store (breaking query_bm25)
+# ---------------------------------------------------------------------------
+
+
+class TestHttpMcpDispatch:
+    def _ctx(self):
+        from apps.api.main import ApiContext
+
+        graph = MagicMock()
+        graph.upsert_node.return_value = {"id": "n1"}
+        docs = MagicMock()
+        vector = MagicMock()
+        vector.upsert_texts.return_value = ["vec-1"]
+        return ApiContext(
+            settings=MagicMock(), graph=graph, vector=vector, docs=docs,
+            sql=MagicMock(), hybrid=MagicMock(), impact=MagicMock(),
+        )
+
+    def _auth(self):
+        from apps.api.main import AuthContext
+
+        return AuthContext(user_id="u1", tier="api")
+
+    @pytest.mark.asyncio
+    async def test_add_node_valid_writes_graph_and_doc(self):
+        from apps.api.main import _mcp_dispatch
+
+        ctx, auth = self._ctx(), self._auth()
+        res = await _mcp_dispatch(
+            "ontology_add_node",
+            {"space": "concept", "node_type": "Concept", "node_id": "n1"},
+            auth, ctx,
+        )
+        assert res["status"] == "ok"
+        # fix #3: a valid node must NOT be reported as an error
+        assert "error" not in res
+        # fix #4: graph upsert called, and node mirrored into doc store for BM25
+        ctx.graph.upsert_node.assert_called_once()
+        ctx.docs.upsert_node_doc.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_add_node_invalid_type_returns_error(self):
+        from apps.api.main import _mcp_dispatch
+
+        ctx, auth = self._ctx(), self._auth()
+        res = await _mcp_dispatch(
+            "ontology_add_node",
+            {"space": "concept", "node_type": "NotARealType", "node_id": "x"},
+            auth, ctx,
+        )
+        assert "error" in res
+        ctx.graph.upsert_node.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_add_edge_valid_relation(self):
+        from apps.api.main import _mcp_dispatch
+
+        ctx, auth = self._ctx(), self._auth()
+        # fix #2 + #3: part_of is valid concept->concept; must succeed
+        res = await _mcp_dispatch(
+            "ontology_add_edge",
+            {"from_space": "concept", "from_id": "a", "relation": "part_of",
+             "to_space": "concept", "to_id": "b"},
+            auth, ctx,
+        )
+        assert res["status"] == "ok"
+        ctx.graph.upsert_edge.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_add_edge_invalid_relation_returns_error(self):
+        from apps.api.main import _mcp_dispatch
+
+        ctx, auth = self._ctx(), self._auth()
+        res = await _mcp_dispatch(
+            "ontology_add_edge",
+            {"from_space": "concept", "from_id": "a", "relation": "not_a_relation",
+             "to_space": "concept", "to_id": "b"},
+            auth, ctx,
+        )
+        assert "error" in res
+        ctx.graph.upsert_edge.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_ingest_uses_upsert_texts(self):
+        from apps.api.main import _mcp_dispatch
+
+        ctx, auth = self._ctx(), self._auth()
+        with patch("apps.api.main._write_source_doc"):
+            res = await _mcp_dispatch(
+                "ontology_ingest",
+                {"source_id": "s1", "text": "hello world"},
+                auth, ctx,
+            )
+        assert res["status"] == "ok"
+        # fix #1: must call upsert_texts (batch API), never .upsert
+        ctx.vector.upsert_texts.assert_called_once()
+        assert not ctx.vector.upsert.called

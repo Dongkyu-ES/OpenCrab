@@ -838,7 +838,7 @@ async def _mcp_dispatch(tool_name: str, args: dict[str, Any], auth: AuthContext,
         source_id = args.get("source_id") or f"mcp-{uuid4().hex[:8]}"
         meta = dict(args.get("metadata") or {})
         meta.setdefault("user_id", auth.user_id)
-        vec_id = ctx.vector.upsert(source_id, args["text"], meta)
+        vec_id = ctx.vector.upsert_texts([args["text"]], [meta], [source_id])[0]
         _write_source_doc(ctx.docs, source_id, args["text"], meta)
         return {"source_id": source_id, "vector_id": vec_id, "status": "ok"}
 
@@ -851,16 +851,23 @@ async def _mcp_dispatch(tool_name: str, args: dict[str, Any], auth: AuthContext,
         node_id = args["node_id"]
         props = dict(args.get("properties") or {})
         err = validate_node(space, node_type)
-        if err:
-            return {"error": err}
+        if not err:
+            return {"error": err.error}
         props.update({"id": node_id, "space": space, "node_type": node_type})
-        ctx.graph.upsert_node(space, node_type, node_id, props)
+        ctx.graph.upsert_node(node_type=node_type, node_id=node_id, properties=props, space_id=space)
+        # Mirror into the doc store so the node is BM25-indexable (query_bm25
+        # reads the doc store, not the graph store). Matches OntologyBuilder,
+        # which writes both; this ad-hoc path previously wrote graph only.
+        try:
+            ctx.docs.upsert_node_doc(space, node_type, node_id, props)
+        except Exception as exc:
+            logger.warning("doc-store mirror for node %s failed: %s", node_id, exc)
         return {"node_id": node_id, "space": space, "node_type": node_type, "status": "ok"}
 
     if tool_name == "ontology_add_edge":
-        err = validate_edge(args["from_space"], args["relation"], args["to_space"])
-        if err:
-            return {"error": err}
+        err = validate_edge(args["from_space"], args["to_space"], args["relation"])
+        if not err:
+            return {"error": err.error}
         ctx.graph.upsert_edge(
             args["from_space"], args["from_id"],
             args["relation"],
