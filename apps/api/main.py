@@ -23,6 +23,8 @@ load_dotenv(REPO_ROOT / ".env", override=False)
 from opencrab.config import get_settings
 from opencrab.grammar.manifest import SPACES
 from opencrab.grammar.validator import describe_grammar, validate_edge, validate_node
+from opencrab.mcp.tools import TOOLS as MCP_TOOLS
+from opencrab.mcp.tools import dispatch_tool as dispatch_registry_tool
 from opencrab.ontology.impact import ImpactEngine
 from opencrab.ontology.query import HybridQuery
 from opencrab.stores.factory import make_doc_store, make_graph_store, make_sql_store, make_vector_store
@@ -814,94 +816,8 @@ def list_edges(
 
 ## ─── Remote MCP Server (Streamable HTTP, 2025-03-26) ────────────────────────
 
-MCP_TOOLS = [
-    {
-        "name": "ontology_query",
-        "description": "Hybrid vector + graph search across the ontology",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "question": {"type": "string"},
-                "spaces": {"type": "array", "items": {"type": "string"}},
-                "limit": {"type": "integer", "default": 10},
-            },
-            "required": ["question"],
-        },
-    },
-    {
-        "name": "ontology_ingest",
-        "description": "Ingest text into the ontology vector and graph stores",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "text": {"type": "string"},
-                "source_id": {"type": "string"},
-                "metadata": {"type": "object"},
-            },
-            "required": ["text"],
-        },
-    },
-    {
-        "name": "ontology_manifest",
-        "description": "Return the full MetaOntology grammar: spaces, relations, impact categories",
-        "inputSchema": {"type": "object", "properties": {}},
-    },
-    {
-        "name": "ontology_add_node",
-        "description": "Add or update a node in the ontology",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "space": {"type": "string"},
-                "node_type": {"type": "string"},
-                "node_id": {"type": "string"},
-                "properties": {"type": "object"},
-            },
-            "required": ["space", "node_type", "node_id"],
-        },
-    },
-    {
-        "name": "ontology_add_edge",
-        "description": "Add a directed edge between two nodes (grammar-validated)",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "from_space": {"type": "string"},
-                "from_id": {"type": "string"},
-                "relation": {"type": "string"},
-                "to_space": {"type": "string"},
-                "to_id": {"type": "string"},
-            },
-            "required": ["from_space", "from_id", "relation", "to_space", "to_id"],
-        },
-    },
-    {
-        "name": "ontology_impact",
-        "description": "Impact analysis: which I1-I7 categories are triggered by a node change",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "node_id": {"type": "string"},
-                "change_type": {"type": "string", "default": "update"},
-                "depth": {"type": "integer", "default": 2},
-            },
-            "required": ["node_id"],
-        },
-    },
-    {
-        "name": "ontology_lever_simulate",
-        "description": "Predict downstream outcome changes from a lever movement",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "lever_id": {"type": "string"},
-                "direction": {"type": "string", "enum": ["raises", "lowers", "stabilizes", "optimizes"]},
-                "magnitude": {"type": "number", "default": 0.5},
-            },
-            "required": ["lever_id", "direction"],
-        },
-    },
-]
+# 툴 스키마/구현은 stdio MCP 서버와 동일한 레지스트리(opencrab.mcp.tools)를 공유한다.
+# MCP_TOOLS / dispatch_registry_tool 은 상단에서 import.
 
 
 def _mcp_text(data: Any) -> dict[str, Any]:
@@ -961,7 +877,10 @@ async def _mcp_dispatch(tool_name: str, args: dict[str, Any], auth: AuthContext,
         result = ctx.impact.simulate_lever(args["lever_id"], args["direction"], args.get("magnitude", 0.5))
         return result if isinstance(result, dict) else {"simulation": result}
 
-    return {"error": f"Unknown tool: {tool_name}"}
+    # 위 핸들러가 없는 툴(identity/promotion/workflow/schema_pack 등)은 stdio 와
+    # 동일한 레지스트리로 위임한다. 동기 호출로 유지 — 레지스트리 스토어 싱글턴이
+    # stdio 처럼 단일 스레드 접근을 전제하므로 이벤트 루프 직렬화가 그 보장을 대신한다.
+    return dispatch_registry_tool(tool_name, args)
 
 
 @app.get("/mcp")
