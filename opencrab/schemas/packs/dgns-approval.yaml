@@ -1,0 +1,38 @@
+name: dgns-approval
+version: "1.0.0"
+description: >
+  DGNS(대명 포털) 전자결재 도메인 스키마 팩 — Halo ERP+그룹웨어 이관 레퍼런스.
+  레거시 전자결재 서식함의 양식·분류·기본결재선 개념 모델 (2026-07-20 전수조사 기반).
+types:
+  - name: ApprovalForm
+    space: concept
+    description: 전자결재 양식(기안 서식). DGNS 서식함의 개별 양식 1건.
+    properties:
+      form_id: string
+      name: string
+      category: string
+      form_type: string   # editor | editor-blank | program
+      registered_date: string
+      appr_doc_type: string
+      appr_doc_cd: string
+      urgent_available: boolean
+      def_line_id: string
+  - name: ApprovalFormCategory
+    space: concept
+    description: 전자결재 양식 분류(서식함 폴더).
+    properties:
+      category_id: string
+      name: string
+      form_count: number
+  - name: ApprovalLine
+    space: concept
+    description: 기본 결재선(defLine). 양식과 분리되어 재사용되는 결재선 프리셋.
+    properties:
+      def_line_id: string
+      used_by_form: string
+      editable_by_drafter: boolean
+relations:
+  - name: uses_default_line
+    from_space: concept
+    to_space: concept
+    description: 양식이 기본 결재선 프리셋을 참조한다 (ApprovalForm → ApprovalLine)
